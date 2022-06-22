@@ -176,7 +176,7 @@ class Api(object):
     ENDPOINTS = ENDPOINTS
     
     # Follows API spec capitalization in variable names for consistency.
-    def __init__(self, ApiUser, ApiKey, ClientIP, UserName=None, sandbox=False, debug=False,
+    def __init__(self, ApiUser, ApiKey, ClientIP, UserName=None, sandbox=False, debug=False, proxies=None,
                  attempts_count=DEFAULT_ATTEMPTS_COUNT, attempts_delay=DEFAULT_ATTEMPTS_DELAY,
                  **kwargs):
         self.ApiUser = ApiUser
@@ -189,7 +189,8 @@ class Api(object):
         self.payload_limit = 10  # After hitting this lenght limit script will move payload from POST params to POST data
         self.attempts_count = attempts_count
         self.attempts_delay = attempts_delay
-        
+        self.proxies = proxies
+
         if kwargs.get('add_logger', True):
             lh = LogHelper('namecheap', handler_level=logging.DEBUG if debug else logging.WARNING)
             lh.add_console_handler()
@@ -426,9 +427,9 @@ class Api(object):
         attempts_left = self.attempts_count
         while attempts_left > 0:
             if extra_payload:
-                r = requests.post(self.endpoint, params=payload, data=extra_payload)
+                r = requests.post(self.endpoint, params=payload, data=extra_payload, proxies=proxies)
             else:
-                r = requests.post(self.endpoint, params=payload)
+                r = requests.post(self.endpoint, params=payload, proxies=proxies)
             if 200 <= r.status_code <= 299:
                 break
             if attempts_left <= 1:
