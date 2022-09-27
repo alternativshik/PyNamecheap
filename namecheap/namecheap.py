@@ -427,9 +427,9 @@ class Api(object):
         attempts_left = self.attempts_count
         while attempts_left > 0:
             if extra_payload:
-                r = requests.post(self.endpoint, params=payload, data=extra_payload, proxies=proxies)
+                r = requests.post(self.endpoint, params=payload, data=extra_payload, proxies=self.proxies)
             else:
-                r = requests.post(self.endpoint, params=payload, proxies=proxies)
+                r = requests.post(self.endpoint, params=payload, proxies=self.proxies)
             if 200 <= r.status_code <= 299:
                 break
             if attempts_left <= 1:
